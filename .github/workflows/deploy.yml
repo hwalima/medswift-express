@@ -52,6 +52,7 @@ jobs:
             cd /home/medswift/public_html
 
             echo "── Pulling latest code ──"
+            git remote set-url origin https://github.com/hwalima/medswift-express.git
             git pull origin main
 
             echo "── Installing PHP dependencies ──"
