@@ -50,11 +50,7 @@
 
             {{-- CTAs --}}
             <div class="hidden md:flex items-center gap-3">
-                @auth
-                    <a href="{{ route('dashboard') }}"
-                       class="rounded-lg px-4 py-2 text-sm font-medium text-teal-light border border-teal/40 hover:bg-teal/10 transition-colors">
-                        Dashboard
-                    </a>
+
                 {{-- Dark mode toggle — always visible --}}
                 <button id="theme-toggle"
                         class="rounded-full p-2 text-white/60 hover:bg-white/10 transition-colors"
