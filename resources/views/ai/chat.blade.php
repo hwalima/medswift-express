@@ -58,7 +58,7 @@
                 </div>
                 <div class="rounded-2xl rounded-tl-sm px-4 py-3 bg-white dark:bg-surface-dark-card shadow-sm
                             border border-gray-100 dark:border-gray-700/50 text-sm text-gray-700 dark:text-gray-300">
-                    Hello, <strong>{{ auth()->user()->name }}</strong>! I'm <strong>Swiftie</strong>, your MedSwift logistics assistant. I can track shipments, generate quotes, explain cold-chain requirements, and more.<br>
+                    Hello, <strong>{{ auth()->user()?->name ?? 'there' }}</strong>! I'm <strong>Swiftie</strong>, your MedSwift logistics assistant. I can track shipments, generate quotes, explain cold-chain requirements, and more.<br>
                     <span class="text-xs text-slate dark:text-slate-light mt-1 block">Use the quick actions above or type your question below.</span>
                 </div>
             </div>
@@ -207,7 +207,7 @@
         const avatar = document.createElement('div');
         if (isUser) {
             avatar.className = 'h-8 w-8 rounded-full bg-teal/20 dark:bg-teal/30 flex items-center justify-center shrink-0 text-teal dark:text-teal-light text-xs font-bold';
-            avatar.textContent = '{{ substr(auth()->user()->name, 0, 1) }}';
+            avatar.textContent = '{{ substr(auth()->user()?->name ?? 'G', 0, 1) }}';
         } else {
             avatar.className = 'h-8 w-8 rounded-lg bg-gradient-to-br from-teal to-emerald flex items-center justify-center shrink-0 shadow-sm';
             avatar.innerHTML = `<svg class="h-4 w-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z"/></svg>`;

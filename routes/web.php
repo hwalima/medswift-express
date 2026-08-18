@@ -16,9 +16,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/shipments/{shipment}/invoice', [ShipmentController::class, 'invoice'])->name('shipments.invoice');
 });
 
-// ── AI Assistant ─────────────────────────────────────────────────
-Route::middleware(['auth', 'verified'])->prefix('ai')->name('ai.')->group(function () {
-    Route::get('/',       [AiAssistantController::class, 'chat'])->name('chat');
+// ── AI Assistant (public — no login required) ──────────────────────
+Route::prefix('ai')->name('ai.')->group(function () {
+    Route::get('/',         [AiAssistantController::class, 'chat'])->name('chat');
     Route::post('/message', [AiAssistantController::class, 'message'])->name('message');
     Route::post('/clear',   [AiAssistantController::class, 'clearHistory'])->name('clear');
 });

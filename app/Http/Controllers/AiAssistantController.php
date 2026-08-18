@@ -23,7 +23,7 @@ class AiAssistantController extends Controller
             'message' => 'required|string|max:1000',
         ]);
 
-        $user    = auth()->user();
+        $user    = auth()->user(); // may be null for guests
         $history = session('ai_conversation', GroqService::systemPrompt($user));
 
         $history[] = ['role' => 'user', 'content' => $request->input('message')];
@@ -31,12 +31,11 @@ class AiAssistantController extends Controller
         try {
             $reply = $this->groq->chat($history, $user);
         } catch (Throwable $e) {
-            return response()->json(['error' => 'The AI assistant is temporarily unavailable. Please try again shortly.'], 503);
+            return response()->json(['error' => 'Swiftie is temporarily unavailable. Please try again shortly.'], 503);
         }
 
         $history[] = ['role' => 'assistant', 'content' => $reply];
 
-        // Keep only the system prompt + last 30 turns to avoid token overflow
         $systemMsg = array_shift($history);
         session(['ai_conversation' => array_merge(
             [$systemMsg],

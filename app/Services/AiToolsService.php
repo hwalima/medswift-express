@@ -9,15 +9,20 @@ class AiToolsService
 {
     // ─── Tool registry ────────────────────────────────────────────
 
-    public function getToolDefinitions(User $user): array
+    public function getToolDefinitions(?User $user): array
     {
         $tools = [
             $this->defTrackShipment(),
-            $this->defListShipments(),
             $this->defCalculateQuote(),
         ];
 
-        if ($user->isAdmin()) {
+        // Authenticated users can list their own shipments
+        if ($user) {
+            $tools[] = $this->defListShipments();
+        }
+
+        // Admins get ops tools
+        if ($user && $user->isAdmin()) {
             $tools[] = $this->defGetOperationsSummary();
             $tools[] = $this->defGetActiveExceptions();
         }
@@ -25,7 +30,7 @@ class AiToolsService
         return $tools;
     }
 
-    public function execute(string $name, array $args, User $user): mixed
+    public function execute(string $name, array $args, ?User $user): mixed
     {
         return match ($name) {
             'track_shipment'          => $this->trackShipment($args['tracking_number'] ?? '', $user),
@@ -65,8 +70,8 @@ class AiToolsService
         $query = Shipment::with(['client', 'courier', 'statusLogs' => fn ($q) => $q->limit(5)])
             ->where('tracking_number', strtoupper(trim($trackingNumber)));
 
-        // Non-admins can only see their own shipments
-        if (! $user->isAdmin()) {
+        // Non-admins can only see their own shipments; guests can see any (public tracking)
+        if ($user && ! $user->isAdmin()) {
             $query->where('client_id', $user->id);
         }
 
@@ -121,8 +126,12 @@ class AiToolsService
         ];
     }
 
-    public function listShipments(User $user): array
+    public function listShipments(?User $user): array
     {
+        if (! $user) {
+            return ['error' => 'Please sign in to view your shipments.'];
+        }
+
         $query = $user->isAdmin()
             ? Shipment::query()
             : Shipment::where('client_id', $user->id);
@@ -220,9 +229,9 @@ class AiToolsService
         ];
     }
 
-    public function getOperationsSummary(User $user): array
+    public function getOperationsSummary(?User $user): array
     {
-        abort_unless($user->isAdmin(), 403);
+        abort_unless($user && $user->isAdmin(), 403);
 
         return [
             'active_shipments'      => Shipment::whereNotIn('current_status', ['delivered', 'cancelled'])->count(),
@@ -250,9 +259,9 @@ class AiToolsService
         ];
     }
 
-    public function getActiveExceptions(User $user): array
+    public function getActiveExceptions(?User $user): array
     {
-        abort_unless($user->isAdmin(), 403);
+        abort_unless($user && $user->isAdmin(), 403);
 
         $exceptions = Shipment::where('current_status', 'exception')
             ->with('client', 'courier')
