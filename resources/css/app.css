@@ -1,0 +1,37 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/forms';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+/* Class-based dark mode: toggled via Alpine.js store on <html class="dark"> */
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+    /* ── Typography ─────────────────────────── */
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* ── MedSwift Brand Palette ─────────────── */
+    --color-teal:          #1697a9;
+    --color-teal-light:    #1ab4ca;
+    --color-teal-dark:     #127f8e;
+
+    --color-emerald:       #1da287;
+    --color-emerald-light: #22bfa0;
+    --color-emerald-dark:  #178a71;
+
+    --color-slate:         #98aeb1;
+    --color-slate-light:   #b3c5c8;
+    --color-slate-dark:    #7a9396;
+
+    --color-cyan:          #2b9297;
+    --color-cyan-dark:     #23787c;
+
+    /* ── Background / Surface Tokens ────────── */
+    --color-surface-light:     #fafcfa;
+    --color-surface-dark:      #0d1719;
+    --color-surface-dark-card: #142225;
+}

@@ -1,0 +1,24 @@
+---
+deployment:
+  - source: .
+    destination: /home/medswift/public_html
+
+  - source: public
+    destination: /home/medswift/public_html/public
+
+  - type: command
+    stage: time-limit
+    time: 300
+
+  - type: command
+    stage: post-deploy
+    commands:
+      - cd /home/medswift/public_html
+      - php artisan down --retry=10
+      - composer install --no-dev --optimize-autoloader --no-interaction
+      - php artisan migrate --force
+      - php artisan config:cache
+      - php artisan route:cache
+      - php artisan view:cache
+      - php artisan storage:link
+      - php artisan up
