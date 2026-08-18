@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="scroll-smooth" x-data x-bind:class="$store.theme?.dark ? 'dark' : ''">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -44,6 +44,10 @@
                 <a href="#how-it-works" class="text-white/70 hover:text-teal-light transition-colors">How It Works</a>
                 <a href="#features" class="text-white/70 hover:text-teal-light transition-colors">Features</a>
                 <a href="#about" class="text-white/70 hover:text-teal-light transition-colors">About</a>
+                <a href="{{ route('ai.chat') }}" class="flex items-center gap-1.5 text-white/70 hover:text-teal-light transition-colors">
+                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z"/></svg>
+                    Swiftie AI
+                </a>
             </div>
 
             {{-- CTAs --}}
@@ -65,6 +69,17 @@
                               shadow-lg shadow-teal/25 transition-all">
                         Get Started
                     </a>
+                {{-- Dark mode toggle --}}
+                <button x-on:click="$store.theme.toggle()"
+                        class="rounded-full p-2 text-white/60 hover:bg-white/10 transition-colors"
+                        aria-label="Toggle dark mode">
+                    <svg x-show="$store.theme?.dark" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 1 0 0 10A5 5 0 0 0 12 7z"/>
+                    </svg>
+                    <svg x-show="!$store.theme?.dark" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
                 @endauth
             </div>
 
@@ -492,6 +507,48 @@
         </div>
     </div>
 </footer>
+
+{{-- ═══════════════════════════════════════════════════════
+     FLOATING SWIFTIE BUTTON
+═══════════════════════════════════════════════════════ --}}
+<a href="{{ route('ai.chat') }}"
+   class="fixed bottom-6 right-6 z-50 group flex items-center gap-0 overflow-hidden
+          glass bg-gradient-to-br from-teal to-emerald
+          border border-white/20 rounded-2xl shadow-2xl shadow-teal/40
+          px-4 py-3.5
+          hover:gap-3 hover:pr-5 transition-all duration-300 hover:shadow-teal/60"
+   title="Chat with Swiftie AI">
+
+    {{-- Pulse ring --}}
+    <span class="absolute -top-1 -right-1 flex h-3 w-3">
+        <span class="pulse-ring absolute inline-flex h-full w-full rounded-full bg-emerald-light opacity-60"></span>
+        <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald"></span>
+    </span>
+
+    {{-- Icon --}}
+    <svg class="h-5 w-5 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z"/>
+    </svg>
+
+    {{-- Label — slides in on hover --}}
+    <span class="max-w-0 group-hover:max-w-xs overflow-hidden whitespace-nowrap transition-all duration-300 text-white text-sm font-semibold">
+        Chat with Swiftie
+    </span>
+</a>
+
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.store('theme', {
+            dark: localStorage.getItem('medswift-theme') === 'dark'
+                    || (!localStorage.getItem('medswift-theme')
+                        && window.matchMedia('(prefers-color-scheme: dark)').matches),
+            toggle() {
+                this.dark = !this.dark;
+                localStorage.setItem('medswift-theme', this.dark ? 'dark' : 'light');
+            },
+        });
+    });
+</script>
 
 </body>
 </html>
