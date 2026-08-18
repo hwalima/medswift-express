@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Mail\Message;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class SettingsController extends Controller
@@ -63,5 +66,32 @@ class SettingsController extends Controller
         Setting::saveGroup($group, $data, $types);
 
         return back()->with('success', ucfirst($group) . ' settings saved.');
+    }
+
+    public function testEmail(Request $request): JsonResponse
+    {
+        $request->validate(['to' => 'required|email']);
+
+        // Apply saved SMTP settings at runtime without touching .env
+        Config::set('mail.default', Setting::get('mail_mailer', 'smtp'));
+        Config::set('mail.mailers.smtp.host', Setting::get('mail_host', config('mail.mailers.smtp.host')));
+        Config::set('mail.mailers.smtp.port', (int) Setting::get('mail_port', 587));
+        Config::set('mail.mailers.smtp.username', Setting::get('mail_username'));
+        Config::set('mail.mailers.smtp.password', Setting::get('mail_password'));
+        Config::set('mail.from.address', Setting::get('mail_from_address', 'hello@medswift.express'));
+        Config::set('mail.from.name', Setting::get('mail_from_name', 'MedSwift Express'));
+
+        try {
+            Mail::raw(
+                "✅ Test email from MedSwift Express!\n\nYour SMTP configuration is working correctly.\n\nSent: " . now()->toDateTimeString(),
+                fn (\Illuminate\Mail\Message $msg) => $msg
+                    ->to($request->input('to'))
+                    ->subject('MedSwift Express — SMTP Test ✓')
+            );
+
+            return response()->json(['ok' => true, 'message' => '✓ Test email sent to ' . $request->input('to')]);
+        } catch (\Throwable $e) {
+            return response()->json(['ok' => false, 'message' => '✗ ' . $e->getMessage()], 422);
+        }
     }
 }

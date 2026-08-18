@@ -120,6 +120,41 @@
                         <x-settings-field name="mail_from_address" label="From Email" placeholder="hello@medswift.express" :value="$settings['mail_from_address'] ?? ''"/>
                         <x-settings-field name="mail_from_name" label="From Name" :value="$settings['mail_from_name'] ?? 'MedSwift Express'"/>
                     </div>
+
+                    {{-- Test email panel --}}
+                    <div class="mt-4 rounded-xl border border-dashed border-teal/40 bg-teal/5 dark:bg-teal/10 p-5"
+                         x-data="{ email: '{{ auth()->user()?->email }}', sending: false, result: null }">
+                        <p class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">🧪 Test Email Connection</p>
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <input type="email" x-model="email" placeholder="Send test to…"
+                                   class="flex-1 rounded-lg border-gray-300 dark:border-gray-600
+                                          dark:bg-surface-dark dark:text-gray-100
+                                          focus:border-teal focus:ring-teal/50 text-sm px-3 py-2">
+                            <button type="button" :disabled="sending"
+                                    @click="sending=true; result=null;
+                                        fetch('{{ route('admin.settings.test-email') }}', {
+                                            method: 'POST',
+                                            headers: {'Content-Type':'application/json','X-CSRF-TOKEN':'{{ csrf_token() }}'},
+                                            body: JSON.stringify({to: email})
+                                        })
+                                        .then(r => r.json())
+                                        .then(d => { result = d; sending = false; })
+                                        .catch(() => { result = {ok: false, message: 'Request failed.'}; sending = false; })"
+                                    class="rounded-lg bg-teal hover:bg-teal-dark disabled:opacity-60 px-5 py-2 text-sm font-semibold text-white
+                                           transition-colors flex items-center gap-2 shrink-0">
+                                <svg x-show="!sending" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"/>
+                                </svg>
+                                <svg x-show="sending" class="h-4 w-4 animate-spin" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"/>
+                                </svg>
+                                <span x-text="sending ? 'Sending…' : 'Send Test Email'"></span>
+                            </button>
+                        </div>
+                        <p x-show="result"
+                           :class="result?.ok ? 'text-emerald-dark dark:text-emerald-light' : 'text-red-600 dark:text-red-400'"
+                           class="mt-2 text-sm font-medium" x-text="result?.message"></p>
+                    </div>
                 @endif
 
                 {{-- ── WHATSAPP ──────────────────────────────── --}}

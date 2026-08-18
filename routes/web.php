@@ -35,6 +35,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])
         Route::get('/settings', [Admin\SettingsController::class, 'index'])->name('settings');
         Route::get('/settings/{group}', [Admin\SettingsController::class, 'show'])->name('settings.group');
         Route::patch('/settings/{group}', [Admin\SettingsController::class, 'update'])->name('settings.update');
+        Route::post('/settings/test-email', [Admin\SettingsController::class, 'testEmail'])->name('settings.test-email');
     });
 
 // ── Courier portal ───────────────────────────────────────────────
