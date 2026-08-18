@@ -6,6 +6,8 @@
     <title>MedSwift Express — Medical Courier &amp; Logistics</title>
     <meta name="description" content="South Africa's leading AI-powered medical courier service. Reliable cold-chain specimen transit, urgent dispatch, and laboratory logistics.">
     <link rel="icon" type="image/png" href="/favicon.png">
+    {{-- Apply dark class synchronously to prevent flash --}}
+    <script>if(localStorage.getItem('medswift-theme')==='dark'||(localStorage.getItem('medswift-theme')===null&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark')}</script>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:300,400,500,600,700,800,900" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -69,14 +71,15 @@
                               shadow-lg shadow-teal/25 transition-all">
                         Get Started
                     </a>
-                {{-- Dark mode toggle --}}
-                <button x-on:click="$store.theme.toggle()"
+                {{-- Self-contained dark mode toggle (no store dependency) --}}
+                <button x-data="{ dark: localStorage.getItem('medswift-theme') === 'dark' || (!localStorage.getItem('medswift-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches) }"
+                        @click="dark = !dark; localStorage.setItem('medswift-theme', dark ? 'dark' : 'light'); document.documentElement.classList.toggle('dark', dark)"
                         class="rounded-full p-2 text-white/60 hover:bg-white/10 transition-colors"
                         aria-label="Toggle dark mode">
-                    <svg x-show="$store.theme?.dark" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <svg x-show="dark" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 1 0 0 10A5 5 0 0 0 12 7z"/>
                     </svg>
-                    <svg x-show="!$store.theme?.dark" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <svg x-show="!dark" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
                     </svg>
                 </button>
