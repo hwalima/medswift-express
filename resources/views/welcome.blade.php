@@ -46,10 +46,6 @@
                 <a href="#how-it-works" class="text-white/70 hover:text-teal-light transition-colors">How It Works</a>
                 <a href="#features" class="text-white/70 hover:text-teal-light transition-colors">Features</a>
                 <a href="#about" class="text-white/70 hover:text-teal-light transition-colors">About</a>
-                <a href="{{ route('ai.chat') }}" class="flex items-center gap-1.5 text-white/70 hover:text-teal-light transition-colors">
-                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z"/></svg>
-                    Swiftie AI
-                </a>
             </div>
 
             {{-- CTAs --}}
@@ -71,15 +67,14 @@
                               shadow-lg shadow-teal/25 transition-all">
                         Get Started
                     </a>
-                {{-- Self-contained dark mode toggle (no store dependency) --}}
-                <button x-data="{ dark: localStorage.getItem('medswift-theme') === 'dark' || (!localStorage.getItem('medswift-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches) }"
-                        @click="dark = !dark; localStorage.setItem('medswift-theme', dark ? 'dark' : 'light'); document.documentElement.classList.toggle('dark', dark)"
+                {{-- Dark mode toggle --}}
+                <button id="theme-toggle"
                         class="rounded-full p-2 text-white/60 hover:bg-white/10 transition-colors"
                         aria-label="Toggle dark mode">
-                    <svg x-show="dark" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <svg id="icon-sun" class="h-5 w-5 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 1 0 0 10A5 5 0 0 0 12 7z"/>
                     </svg>
-                    <svg x-show="!dark" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <svg id="icon-moon" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
                     </svg>
                 </button>
@@ -540,16 +535,56 @@
 </a>
 
 <script>
-    document.addEventListener('alpine:init', () => {
-        Alpine.store('theme', {
-            dark: localStorage.getItem('medswift-theme') === 'dark'
-                    || (!localStorage.getItem('medswift-theme')
-                        && window.matchMedia('(prefers-color-scheme: dark)').matches),
-            toggle() {
-                this.dark = !this.dark;
-                localStorage.setItem('medswift-theme', this.dark ? 'dark' : 'light');
-            },
+    // Pure JS dark mode — no Alpine dependency
+    const THEME_KEY = 'medswift-theme';
+    const html = document.documentElement;
+    const sunIcon  = document.getElementById('icon-sun');
+    const moonIcon = document.getElementById('icon-moon');
+    const toggleBtn = document.getElementById('theme-toggle');
+
+    function isDark() {
+        const stored = localStorage.getItem(THEME_KEY);
+        return stored === 'dark' || (stored === null && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+
+    function applyTheme(dark) {
+        html.classList.toggle('dark', dark);
+        if (sunIcon && moonIcon) {
+            sunIcon.classList.toggle('hidden', !dark);
+            moonIcon.classList.toggle('hidden', dark);
+        }
+        // Sync Alpine store if Alpine is loaded
+        if (window.Alpine && Alpine.store('theme')) {
+            Alpine.store('theme').dark = dark;
+        }
+    }
+
+    // Apply on load
+    applyTheme(isDark());
+
+    // Toggle on click
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+            const next = !isDark();
+            localStorage.setItem(THEME_KEY, next ? 'dark' : 'light');
+            applyTheme(next);
         });
+    }
+
+    // Also init Alpine store for authenticated app pages
+    document.addEventListener('alpine:init', () => {
+        if (window.Alpine) {
+            Alpine.store('theme', {
+                dark: isDark(),
+                toggle() {
+                    const next = !this.dark;
+                    this.dark = next;
+                    localStorage.setItem(THEME_KEY, next ? 'dark' : 'light');
+                    html.classList.toggle('dark', next);
+                    applyTheme(next);
+                },
+            });
+        }
     });
 </script>
 
