@@ -55,6 +55,23 @@
                        class="rounded-lg px-4 py-2 text-sm font-medium text-teal-light border border-teal/40 hover:bg-teal/10 transition-colors">
                         Dashboard
                     </a>
+                {{-- Dark mode toggle — always visible --}}
+                <button id="theme-toggle"
+                        class="rounded-full p-2 text-white/60 hover:bg-white/10 transition-colors"
+                        aria-label="Toggle dark mode">
+                    <svg id="icon-sun" class="h-5 w-5 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 1 0 0 10A5 5 0 0 0 12 7z"/>
+                    </svg>
+                    <svg id="icon-moon" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+
+                @auth
+                    <a href="{{ route('dashboard') }}"
+                       class="rounded-lg px-4 py-2 text-sm font-medium text-teal-light border border-teal/40 hover:bg-teal/10 transition-colors">
+                        Dashboard
+                    </a>
                 @else
                     <a href="{{ route('login') }}"
                        class="text-sm font-medium text-white/80 hover:text-white transition-colors px-3 py-2">
@@ -67,17 +84,6 @@
                               shadow-lg shadow-teal/25 transition-all">
                         Get Started
                     </a>
-                {{-- Dark mode toggle --}}
-                <button id="theme-toggle"
-                        class="rounded-full p-2 text-white/60 hover:bg-white/10 transition-colors"
-                        aria-label="Toggle dark mode">
-                    <svg id="icon-sun" class="h-5 w-5 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 1 0 0 10A5 5 0 0 0 12 7z"/>
-                    </svg>
-                    <svg id="icon-moon" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                    </svg>
-                </button>
                 @endauth
             </div>
 
