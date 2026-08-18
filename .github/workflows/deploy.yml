@@ -27,28 +27,16 @@ jobs:
       - name: Install Composer dependencies (production)
         run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
-      - name: Setup Node.js & build assets
+      - name: Setup Node.js & compile assets
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install NPM dependencies & compile assets
+      - name: Build frontend assets
         run: |
           npm ci
           npm run build
-
-      - name: Copy built assets to server
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          port: ${{ secrets.SSH_PORT != '' && secrets.SSH_PORT || '22' }}
-          source: "public/build/"
-          target: "/home/medswift/public_html/public/"
-          strip_components: 1
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
@@ -60,33 +48,31 @@ jobs:
           port: ${{ secrets.SSH_PORT != '' && secrets.SSH_PORT || '22' }}
           script: |
             set -e
-            export PATH="$HOME/bin:$HOME/.local/share/fnm:$PATH"
-            eval "$(fnm env --shell bash 2>/dev/null || true)"
             cd /home/medswift/public_html
 
-            echo "── Pulling latest code ──"
+            echo "---- Pulling latest code (including built assets) ----"
             git remote set-url origin https://github.com/hwalima/medswift-express.git
             git pull origin main
 
-            echo "── Installing PHP dependencies ──"
+            echo "---- Installing PHP dependencies ----"
             $HOME/bin/composer install --no-dev --optimize-autoloader --no-interaction
 
-            echo "── Putting app into maintenance mode ──"
+            echo "---- Putting app into maintenance mode ----"
             php artisan down --retry=10
 
-            echo "── Running migrations ──"
+            echo "---- Running migrations ----"
             php artisan migrate --force
 
-            echo "── Caching config, routes, views ──"
+            echo "---- Caching config, routes, views ----"
             php artisan config:cache
             php artisan route:cache
             php artisan view:clear
             php artisan view:cache
 
-            echo "── Linking storage ──"
+            echo "---- Linking storage ----"
             php artisan storage:link || true
 
-            echo "── Bringing app back online ──"
+            echo "---- Bringing app back online ----"
             php artisan up
 
-            echo "── Deployment complete ──"
+            echo "---- Deployment complete ----"
