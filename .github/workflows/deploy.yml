@@ -47,6 +47,8 @@ jobs:
           port: ${{ secrets.SSH_PORT != '' && secrets.SSH_PORT || '22' }}
           script: |
             set -e
+            export PATH="$HOME/bin:$HOME/.local/share/fnm:$PATH"
+            eval "$(fnm env --shell bash 2>/dev/null || true)"
             cd /home/medswift/public_html
 
             echo "── Pulling latest code ──"
@@ -54,6 +56,10 @@ jobs:
 
             echo "── Installing PHP dependencies ──"
             composer install --no-dev --optimize-autoloader --no-interaction
+
+            echo "── Building frontend assets ──"
+            npm ci --prefer-offline
+            npm run build
 
             echo "── Putting app into maintenance mode ──"
             php artisan down --retry=10
