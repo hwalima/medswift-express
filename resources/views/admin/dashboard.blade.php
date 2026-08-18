@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-sidebar-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-lg text-gray-800 dark:text-gray-100">Operations Dashboard</h2>
     </x-slot>
@@ -137,4 +137,4 @@
 
         </div>
     </div>
-</x-app-layout>
+</x-sidebar-layout>

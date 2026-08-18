@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin;
+use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\AiAssistantController;
 use App\Http\Controllers\Courier;
 use App\Http\Controllers\ProfileController;
@@ -31,6 +32,9 @@ Route::middleware(['auth', 'verified', 'role:admin'])
         Route::get('/shipments', [Admin\ShipmentController::class, 'index'])->name('shipments.index');
         Route::get('/shipments/{shipment}', [Admin\ShipmentController::class, 'show'])->name('shipments.show');
         Route::patch('/shipments/{shipment}', [Admin\ShipmentController::class, 'update'])->name('shipments.update');
+        Route::get('/settings', [Admin\SettingsController::class, 'index'])->name('settings');
+        Route::get('/settings/{group}', [Admin\SettingsController::class, 'show'])->name('settings.group');
+        Route::patch('/settings/{group}', [Admin\SettingsController::class, 'update'])->name('settings.update');
     });
 
 // ── Courier portal ───────────────────────────────────────────────

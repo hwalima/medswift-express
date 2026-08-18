@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-sidebar-layout>
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h2 class="font-semibold text-lg text-gray-800 dark:text-gray-100">All Shipments</h2>
@@ -101,4 +101,4 @@
 
         </div>
     </div>
-</x-app-layout>
+</x-sidebar-layout>

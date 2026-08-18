@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-sidebar-layout>
     <x-slot name="header">
         <div class="flex items-center gap-3">
             <a href="{{ route('dashboard') }}" class="text-slate dark:text-slate-light hover:text-teal dark:hover:text-teal-light text-sm">← Dashboard</a>
@@ -127,4 +127,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-sidebar-layout>
